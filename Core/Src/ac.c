@@ -59,7 +59,8 @@ U8X8_UNUSED void *arg_ptr) {
 		HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, arg_int);
 		break;
 	case U8X8_MSG_GPIO_DC:
-			u8x8_gpio_SetDC(u8x8, arg_int);
+		//HAL_GPIO_WritePin(LED_BC1_GPIO_Port, LED_BC1_Pin, arg_int);
+		__NOP();
 		break;
 	case U8X8_MSG_GPIO_RESET:
 		HAL_GPIO_WritePin(SPI1_RES_GPIO_Port, SPI1_RES_Pin, arg_int);
@@ -131,7 +132,7 @@ void start_app(void){
 		u8g2_SetFont(&u8g2, viafont);
 		u8g2_DrawStr(&u8g2, 15, 15, "Hello World!");
 		u8g2_SendBuffer(&u8g2);
-		disp_splash();
+		//disp_splash();
 
 
 }
