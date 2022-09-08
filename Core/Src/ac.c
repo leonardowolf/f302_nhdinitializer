@@ -43,14 +43,29 @@ U8X8_UNUSED void *arg_ptr) {
 	case U8X8_MSG_DELAY_MILLI:
 		HAL_Delay(arg_int);
 		break;
+		//Function which delays 10us
+		case U8X8_MSG_DELAY_10MICRO:
+		for (uint16_t n = 0; n < 320; n++)
+		{
+			__NOP();
+		}
+
+		break;
+		//Function which delays 100ns
+		case U8X8_MSG_DELAY_100NANO:
+			__NOP();
+		break;
 	case U8X8_MSG_GPIO_CS:				// CS (chip select) pin: Output level in arg_int
 		HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, arg_int);
 		break;
 	case U8X8_MSG_GPIO_DC:
+			u8x8_gpio_SetDC(u8x8, arg_int);
 		break;
 	case U8X8_MSG_GPIO_RESET:
 		HAL_GPIO_WritePin(SPI1_RES_GPIO_Port, SPI1_RES_Pin, arg_int);
 		break;
+	default:
+		return 0; //A message was received which is not implemented, return 0 to indicate an error
 	}
 	return 1;
 }
@@ -66,7 +81,6 @@ uint8_t u8x8_byte_3wire_hw_spi(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int,
 		//HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, arg_int);
 		break;
 	case U8X8_MSG_BYTE_SET_DC:
-
 		u8x8_gpio_SetDC(u8x8, arg_int);
 		break;
 	case U8X8_MSG_BYTE_START_TRANSFER:
@@ -113,8 +127,8 @@ void start_app(void){
 		u	Only glyphs on the range of the ASCII codes 32 to 95 (uppercase chars) are included in the font.
 		n	Only numbers and extra glyphs for writing date and time strings are included in the font.
 		...	Other custom character list.*/
-		u8g2_SetFont(&u8g2, u8g2_font_ncenB14_tr);
-		//u8g2_SetFont(&u8g2, viafont);
+		//u8g2_SetFont(&u8g2, u8g2_font_ncenB14_tr);
+		u8g2_SetFont(&u8g2, viafont);
 		u8g2_DrawStr(&u8g2, 15, 15, "Hello World!");
 		u8g2_SendBuffer(&u8g2);
 		disp_splash();
