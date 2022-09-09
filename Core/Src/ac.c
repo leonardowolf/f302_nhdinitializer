@@ -43,54 +43,30 @@ U8X8_UNUSED void *arg_ptr) {
 	case U8X8_MSG_DELAY_MILLI:
 		HAL_Delay(arg_int);
 		break;
-		//Function which delays 10us
-		case U8X8_MSG_DELAY_10MICRO:
-		for (uint16_t n = 0; n < 320; n++)
-		{
-			__NOP();
-		}
-
-		break;
-		//Function which delays 100ns
-		case U8X8_MSG_DELAY_100NANO:
-			__NOP();
-		break;
-	case U8X8_MSG_GPIO_CS:				// CS (chip select) pin: Output level in arg_int
-		HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, arg_int);
-		break;
 	case U8X8_MSG_GPIO_DC:
-		//HAL_GPIO_WritePin(LED_BC1_GPIO_Port, LED_BC1_Pin, arg_int);
-		__NOP();
+		HAL_GPIO_WritePin(SPI1_DC_GPIO_Port, SPI1_DC_Pin, arg_int);
 		break;
 	case U8X8_MSG_GPIO_RESET:
 		HAL_GPIO_WritePin(SPI1_RES_GPIO_Port, SPI1_RES_Pin, arg_int);
 		break;
-	default:
-		return 0; //A message was received which is not implemented, return 0 to indicate an error
 	}
 	return 1;
 }
 
-uint8_t u8x8_byte_3wire_hw_spi(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int,
+uint8_t u8x8_byte_4wire_hw_spi(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int,
 		void *arg_ptr) {
 	switch (msg) {
 	case U8X8_MSG_BYTE_SEND:
 		HAL_SPI_Transmit(&hspi1, (uint8_t*) arg_ptr, arg_int, 10000);
 		break;
 	case U8X8_MSG_BYTE_INIT:
-		 u8x8_gpio_SetCS(u8x8, u8x8->display_info->chip_disable_level);
-		//HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, arg_int);
 		break;
 	case U8X8_MSG_BYTE_SET_DC:
 		u8x8_gpio_SetDC(u8x8, arg_int);
 		break;
 	case U8X8_MSG_BYTE_START_TRANSFER:
-		u8x8_gpio_SetCS(u8x8, u8x8->display_info->chip_enable_level);
-		//HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, arg_int);
 		break;
 	case U8X8_MSG_BYTE_END_TRANSFER:
-		u8x8_gpio_SetCS(u8x8, u8x8->display_info->chip_disable_level);
-		//HAL_GPIO_WritePin(SPI1_CS_GPIO_Port, SPI1_CS_Pin, arg_int);
 		break;
 	default:
 		return 0;
@@ -98,14 +74,15 @@ uint8_t u8x8_byte_3wire_hw_spi(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int,
 	return 1;
 }
 void start_app(void){
-	HAL_GPIO_WritePin(LED_BC1_GPIO_Port, LED_BC1_Pin, GPIO_PIN_SET);
-//	__HAL_TIM_SET_COMPARE(&htim2,TIM_CHANNEL_2, OPTIMAL_BL);
-	u8g2_Setup_ssd1322_nhd_256x64_f(&u8g2, U8G2_R2, u8x8_byte_3wire_hw_spi, u8x8_stm32_gpio_and_delay);
 
+	u8g2_Setup_ssd1322_nhd_256x64_f(&u8g2, U8G2_R2, u8x8_byte_4wire_hw_spi, u8x8_stm32_gpio_and_delay);
 
 	u8g2_InitDisplay(&u8g2);
+	u8g2_InitDisplay(&u8g2);
+	u8g2_InitDisplay(&u8g2);
 	u8g2_SetPowerSave(&u8g2, 0);
-
+	u8g2_SetPowerSave(&u8g2, 0);
+	u8g2_SetPowerSave(&u8g2, 0);
 	//set_contrast(OPTIMAL_CONTRAST);
 
 	u8g2_SetBitmapMode(&u8g2,0);
@@ -128,11 +105,13 @@ void start_app(void){
 		u	Only glyphs on the range of the ASCII codes 32 to 95 (uppercase chars) are included in the font.
 		n	Only numbers and extra glyphs for writing date and time strings are included in the font.
 		...	Other custom character list.*/
-		//u8g2_SetFont(&u8g2, u8g2_font_ncenB14_tr);
-		u8g2_SetFont(&u8g2, viafont);
-		u8g2_DrawStr(&u8g2, 15, 15, "Hello World!");
-		u8g2_SendBuffer(&u8g2);
-		//disp_splash();
+
+//		u8g2_SetFont(&u8g2, u8g2_font_ncenB14_tr);
+//	    u8g2_DrawStr(&u8g2, 0, 15, "Hello World!");
+//	    u8g2_DrawCircle(&u8g2, 64, 40, 10, U8G2_DRAW_ALL);
+//	    u8g2_SendBuffer(&u8g2);
+		disp_splash();
 
 
 }
+
